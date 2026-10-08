@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e1021">
+  <meta name="description" content="ESPIRAL App — estudo de caso de desenvolvimento Full Stack com Next.js, React, TypeScript, Supabase, testes automatizados e foco em privacidade. Projeto de Alan de Vicente.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ESPIRAL App | Estudo de caso de desenvolvimento">
+  <meta property="og:description" content="Conheça a arquitetura, as funcionalidades e as decisões técnicas do ESPIRAL App, uma plataforma web e PWA desenvolvida por Alan de Vicente.">
+  <meta name="color-scheme" content="dark">
+  <title>ESPIRAL App — Estudo de caso | Alan de Vicente</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <style>
+    :root{--bg:#0e1021;--bg2:#16182d;--card:#1a1c32;--border:rgba(255,255,255,.1);--text:#f5f4ff;--muted:#acaac2;--purple:#b49cff;--lilac:#e6dbff;--mint:#91edda;--serif:Georgia,"Times New Roman",serif}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:90px}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    button,a{outline-offset:4px}
+    a:focus-visible{outline:2px solid var(--mint)}
+    ::selection{background:#a78bfa;color:#101021}
+    .container{width:min(1152px,calc(100% - 48px));margin-inline:auto}
+    .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+    .skip{position:absolute;top:-100px;left:16px;z-index:99;background:var(--mint);color:#111;padding:12px;border-radius:8px}
+    .skip:focus{top:16px}
+    .header{position:sticky;top:0;z-index:30;background:rgba(14,16,33,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav{height:76px;display:flex;align-items:center;gap:34px}
+    .brand{display:flex;align-items:center;gap:12px;font-size:19px;letter-spacing:.16em;font-weight:750}
+    .brand-mark{display:grid;place-items:center;width:35px;height:35px;border:1px solid rgba(180,156,255,.35);border-radius:11px;color:var(--lilac);background:linear-gradient(145deg,rgba(180,156,255,.24),rgba(145,237,218,.07));font-family:var(--serif);font-size:23px;letter-spacing:0}
+    .navlinks{display:flex;align-items:center;gap:27px;margin-left:auto;font-size:13px;color:#d0cee3}
+    .navlinks a:hover,.footer a:hover{color:var(--mint)}
+    .nav-cta{border:1px solid rgba(180,156,255,.4);border-radius:999px;padding:10px 18px;background:rgba(180,156,255,.07);font-size:13px;font-weight:650}
+    .nav-cta:hover{background:rgba(180,156,255,.16)}
+    .hero{position:relative;isolation:isolate;padding:98px 0 102px;overflow:hidden}
+    .hero:before{content:"";position:absolute;z-index:-1;width:900px;height:900px;left:48%;top:-490px;border-radius:50%;background:radial-gradient(circle,rgba(124,87,214,.3) 0%,rgba(70,66,131,.13) 40%,transparent 72%);filter:blur(20px);pointer-events:none}
+    .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:68px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--mint);font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.21em}
+    .eyebrow:before{content:"";display:block;width:17px;height:1px;background:currentColor}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-family:var(--serif);font-size:clamp(53px,6.5vw,86px);line-height:1.07;letter-spacing:-.055em;font-weight:400;margin:23px 0 27px}
+    .accent{color:var(--purple)}
+    .hero-copy{max-width:495px;font-size:17px;color:var(--muted);line-height:1.82}
+    .actions{display:flex;flex-wrap:wrap;gap:13px;margin:29px 0 30px}
+    .button{display:inline-flex;justify-content:center;align-items:center;gap:11px;padding:13px 19px;border-radius:10px;font-size:13px;font-weight:750;transition:transform .2s,background .2s;border:1px solid var(--border)}
+    .button:hover{transform:translateY(-2px)}
+    .button.primary{background:var(--lilac);color:#211a42;border-color:var(--lilac)}
+    .button.primary:hover{background:#fff}
+    .button.secondary{background:rgba(255,255,255,.035)}
+    .button.secondary:hover{background:rgba(255,255,255,.08)}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:18px;color:#aaa9c6;font-size:12px}
+    .hero-meta span{display:flex;align-items:center;gap:8px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);display:inline-block}
+    .showcase{position:relative;min-width:0}
+    .showcase:before{content:"";position:absolute;inset:13% 9% 2%;background:rgba(169,130,255,.23);filter:blur(63px);z-index:-1}
+    .preview{border:1px solid rgba(225,218,255,.21);border-radius:25px;background:linear-gradient(140deg,#262442,#18192f);box-shadow:0 30px 85px rgba(0,0,0,.35);padding:18px;transform:rotate(1.5deg)}
+    .preview-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.09);padding:6px 6px 16px}
+    .preview-top strong{font-size:12px;letter-spacing:.22em}
+    .preview-top .avatar{width:31px;height:31px;background:#c7b8ff;color:#251a40;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+    .preview-body{padding:24px 14px 10px}
+    .hello{font-size:11px;color:#b2afc9;letter-spacing:.08em;text-transform:uppercase}
+    .preview h3{font-family:var(--serif);font-size:27px;font-weight:400;letter-spacing:-.02em;margin:6px 0 8px}
+    .preview p{font-size:12px;color:#c0bed2;margin-bottom:23px}
+    .journey{display:flex;gap:7px;justify-content:space-between;margin:15px 0 24px}
+    .journey span{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:#363351;border:1px solid rgba(255,255,255,.08);color:#cac6ea;font-weight:700;font-size:12px}
+    .journey span:first-child,.journey span:nth-child(2){background:#ba9fff;color:#24183c}
+    .mini-card{border-radius:14px;background:#34314e;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .mini-card .micro{color:#d1cde7;font-size:10px;text-transform:uppercase;letter-spacing:.15em}
+    .mini-card strong{display:block;margin-top:6px;font-size:17px}
+    .mini-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(202,185,255,.4);font-size:24px;color:#d1baff}
+    .preview-tabs{display:flex;justify-content:space-around;padding-top:18px;color:#a7a3bb;font-size:10px}
+    .preview-tabs span:first-child{color:var(--mint)}
+    .preview-note{font-size:11px;color:#a3a0bd;text-align:right;margin-top:15px}
+    .techbar{border-block:1px solid var(--border);background:rgba(255,255,255,.014);padding:23px 0}
+    .tech-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .tech-inner small{font-size:11px;color:#8e8ba7;text-transform:uppercase;letter-spacing:.18em}
+    .tech-tags{display:flex;flex-wrap:wrap;gap:27px;color:#d6d3e7;font-size:14px;font-weight:650}
+    section.section{padding:112px 0}
+    .section-intro{max-width:690px;margin-bottom:46px}
+    .section-intro h2,.closing h2{font-family:var(--serif);font-weight:400;font-size:clamp(38px,4.6vw,62px);line-height:1.13;letter-spacing:-.04em;margin:17px 0 20px}
+    .section-intro p{color:var(--muted);font-size:16px;line-height:1.84}
+    .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:21px}
+    .story-panel{min-height:260px;border:1px solid var(--border);border-radius:18px;background:var(--bg2);padding:36px}
+    .story-panel:nth-child(2){background:linear-gradient(145deg,#30294c,#1e2039)}
+    .kicker{font-size:11px;letter-spacing:.19em;text-transform:uppercase;font-weight:750;color:var(--purple)}
+    .story-panel h3{font-family:var(--serif);font-size:30px;font-weight:400;line-height:1.17;margin:25px 0 17px}
+    .story-panel p{font-size:14px;color:#bbb9cf;line-height:1.9;margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .feature{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:29px;min-height:218px;transition:border-color .2s,transform .2s}
+    .feature:hover{border-color:rgba(180,156,255,.45);transform:translateY(-3px)}
+    .feature .glyph{display:grid;place-items:center;width:43px;height:43px;border:1px solid rgba(180,156,255,.28);border-radius:13px;background:rgba(180,156,255,.09);color:var(--lilac);font-family:var(--serif);font-size:24px}
+    .feature h3{font-size:17px;margin:25px 0 9px}
+    .feature p{font-size:13px;color:#acaac4;line-height:1.8;margin:0}
+    .alt{background:#14162a;border-block:1px solid var(--border)}
+    .arch-grid{display:grid;grid-template-columns:.83fr 1.17fr;gap:60px;align-items:center}
+    .arch-grid .section-intro{margin:0}
+    .architecture{display:grid;gap:13px}
+    .layer{border:1px solid rgba(197,181,255,.18);border-radius:15px;padding:20px 24px;background:linear-gradient(100deg,rgba(180,156,255,.09),rgba(145,237,218,.02));display:flex;justify-content:space-between;align-items:center;gap:15px}
+    .layer strong{display:block;font-size:14px}
+    .layer small{color:#aaa7c5;font-size:12px}
+    .layer .number{font-family:var(--serif);font-size:25px;color:var(--purple)}
+    .connect{width:1px;height:17px;background:rgba(180,156,255,.45);margin:-13px auto}
+    .quality-grid{display:grid;grid-template-columns:1fr 1fr;gap:45px}
+    .quality-grid h3{font-size:21px;margin:0 0 12px}
+    .quality-grid p{font-size:14px;color:var(--muted);line-height:1.85}
+    .checks{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:15px}
+    .checks li{display:flex;align-items:flex-start;gap:11px;color:#d5d2e9;font-size:14px}
+    .checks li:before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:rgba(145,237,218,.12);color:var(--mint);font-size:13px;font-weight:700;text-align:center;line-height:22px}
+    .status{padding:29px;border-radius:16px;border:1px solid rgba(145,237,218,.23);background:rgba(145,237,218,.035);display:flex;gap:19px;align-items:flex-start;margin-top:48px}
+    .status strong{font-size:15px}
+    .status p{color:var(--muted);font-size:13px;margin:5px 0 0}
+    .closing{padding:90px 0;text-align:center;background:radial-gradient(ellipse at center top,rgba(110,75,188,.26),transparent 65%)}
+    .closing .eyebrow:before{display:none}
+    .closing p{color:var(--muted);max-width:620px;margin:0 auto 25px}
+    .closing .actions{justify-content:center}
+    .footer{border-top:1px solid var(--border);padding:28px 0 42px}
+    .footer-grid{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}
+    .footer p{color:#8d8ca8;font-size:12px;max-width:720px;margin:0}
+    .footer a{font-size:12px;color:#c9c5df}
+    .footer-links{display:flex;gap:20px;white-space:nowrap}
+    @media(max-width:980px){.hero-grid{gap:28px}.hero{padding:80px 0}.navlinks{gap:16px}.feature{padding:24px}.arch-grid{gap:35px}}
+    @media(max-width:780px){.container{width:min(100% - 36px,620px)}.nav{height:67px}.navlinks{display:none}.nav-cta{margin-left:auto}.hero-grid,.story-grid,.arch-grid,.quality-grid{grid-template-columns:1fr}.hero{padding:70px 0 80px}.hero-copy{max-width:600px}.showcase{max-width:520px;width:100%;margin:15px auto 0}.preview{transform:none}.tech-inner{align-items:flex-start}.tech-tags{gap:15px 25px}.cards{grid-template-columns:repeat(2,1fr)}section.section{padding:82px 0}.arch-grid .section-intro{margin-bottom:10px}}
+    @media(max-width:510px){h1{font-size:52px}.nav-cta{font-size:11px;padding:9px 12px}.brand{font-size:15px;gap:8px}.brand-mark{width:32px;height:32px}.hero-copy{font-size:15px}.cards{grid-template-columns:1fr}.story-panel{min-height:auto;padding:28px}.section-intro h2,.closing h2{font-size:41px}.techbar{padding:24px 0}.tech-tags{font-size:12px}.footer-grid{flex-direction:column}.preview-body{padding:20px 5px 10px}.journey span{width:33px;height:33px;border-radius:9px}.mini-card{padding:16px}.feature{min-height:auto}.status{padding:20px}.hero-meta{gap:10px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition-duration:.001ms!important;animation-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header class="header">
+  <div class="container nav">
+    <a href="#inicio" class="brand" aria-label="ESPIRAL App, voltar ao início"><span class="brand-mark" aria-hidden="true">E</span> ESPIRAL</a>
+    <nav class="navlinks" aria-label="Navegação principal">
+      <a href="#sobre">Sobre</a><a href="#funcionalidades">Funcionalidades</a><a href="#arquitetura">Arquitetura</a><a href="#qualidade">Qualidade</a>
+    </nav>
+    <a class="nav-cta" href="https://github.com/alan0201" target="_blank" rel="noopener noreferrer">GitHub do autor ↗</a>
+  </div>
+</header>
+<main id="conteudo">
+  <section class="hero" id="inicio" aria-labelledby="titulo-principal">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Estudo de caso · Desenvolvimento Full Stack</span>
+        <h1 id="titulo-principal">Pequenas práticas.<br><span class="accent">Uma jornada</span><br>contínua.</h1>
+        <p class="hero-copy">O <strong>ESPIRAL App</strong> é uma plataforma web e PWA que aproxima as práticas do Método ESPIRAL do cotidiano dos participantes, combinando experiência mobile-first, organização de jornadas e cuidado com a privacidade.</p>
+        <div class="actions">
+          <a class="button primary" href="#sobre">Conhecer o projeto <span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="#arquitetura">Explorar a tecnologia <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-meta"><span><i class="dot" aria-hidden="true"></i> Beta funcional</span><span>Web + PWA</span><span>Desenvolvido por Alan de Vicente</span></div>
+      </div>
+      <div class="showcase">
+        <div class="preview" role="img" aria-label="Ilustração conceitual da experiência ESPIRAL: sete etapas, prática diária e navegação de acompanhamento. Não é captura do aplicativo real.">
+          <div class="preview-top"><strong>ESPIRAL <span style="color:#b49cff">/ APP</span></strong><span class="avatar" aria-hidden="true">E</span></div>
+          <div class="preview-body">
+            <div class="hello">Exemplo de jornada</div>
+            <h3>Um dia de cada vez.</h3>
+            <p>Uma experiência organizada para acompanhar práticas e reflexões.</p>
+            <div class="journey" aria-hidden="true"><span>E</span><span>S</span><span>P</span><span>I</span><span>R</span><span>A</span><span>L</span></div>
+            <div class="mini-card"><div><span class="micro">Explorar práticas</span><strong>Seu próximo momento</strong><small style="display:block;color:#bdb6d1;font-size:11px;margin-top:5px">Acompanhe sua jornada</small></div><span class="mini-icon" aria-hidden="true">✦</span></div>
+            <div class="preview-tabs" aria-hidden="true"><span>◎ Hoje</span><span>◷ Jornada</span><span>▥ Registros</span><span>◯ Perfil</span></div>
+          </div>
+        </div>
+        <div class="preview-note">Visual conceitual criado para este portfólio — não é uma tela real do app.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="techbar" aria-label="Tecnologias principais"><div class="container tech-inner"><small>Stack do projeto</small><div class="tech-tags"><span>Next.js</span><span>React</span><span>TypeScript</span><span>Supabase</span><span>PostgreSQL</span><span>Docker</span></div></div></div>
+
+  <section class="section" id="sobre">
+    <div class="container">
+      <div class="section-intro"><span class="eyebrow">01 / Contexto</span><h2>Do conteúdo à <span class="accent">experiência diária.</span></h2><p>O desafio técnico foi transformar uma metodologia acompanhada fora do aplicativo em fluxos digitais claros e acessíveis, com espaço para práticas, registros e evolução ao longo do tempo.</p></div>
+      <div class="story-grid">
+        <article class="story-panel"><span class="kicker">O desafio</span><h3>Conectar a jornada ao cotidiano.</h3><p>Uma experiência mobile-first precisava oferecer continuidade entre encontros, organizar atividades e simplificar o acompanhamento — sem assumir o papel de aconselhamento ou intervenção clínica.</p></article>
+        <article class="story-panel"><span class="kicker">A solução</span><h3>Uma plataforma de acompanhamento.</h3><p>O ESPIRAL reúne jornadas, check-ins, práticas, registros, progresso e gestão de conteúdo em uma aplicação com autenticação, persistência e diferentes níveis de acesso.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="funcionalidades">
+    <div class="container">
+      <div class="section-intro"><span class="eyebrow">02 / Produto</span><h2>Experiências construídas para <span class="accent">uso real.</span></h2><p>As funcionalidades abaixo foram documentadas como implementadas no beta. A validação do piloto com participantes finais ainda está pendente.</p></div>
+      <div class="cards">
+        <article class="feature"><div class="glyph" aria-hidden="true">◎</div><h3>Jornada guiada</h3><p>Práticas organizadas nos sete movimentos do método e acompanhamento do programa.</p></article>
+        <article class="feature"><div class="glyph" aria-hidden="true">✳</div><h3>Check-ins e registros</h3><p>Ferramentas de reflexão, sono, emoções e registros de atividades.</p></article>
+        <article class="feature"><div class="glyph" aria-hidden="true">◷</div><h3>Progresso e planejamento</h3><p>Conquistas, revisões, missões, checklists e visão do percurso individual.</p></article>
+        <article class="feature"><div class="glyph" aria-hidden="true">▤</div><h3>Painel administrativo</h3><p>Gestão de conteúdos, publicação, organização e métricas agregadas.</p></article>
+        <article class="feature"><div class="glyph" aria-hidden="true">◇</div><h3>Regras de recomendação</h3><p>Personalização orientada por regras explícitas, sem diagnósticos automatizados.</p></article>
+        <article class="feature"><div class="glyph" aria-hidden="true">↗</div><h3>Web e PWA</h3><p>Interface responsiva, pensada para celular, tablet e desktop, com instalação como PWA.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="arquitetura">
+    <div class="container arch-grid">
+      <div class="section-intro"><span class="eyebrow">03 / Engenharia</span><h2>Uma base pensada para <span class="accent">evoluir.</span></h2><p>A arquitetura separa a interface das regras de domínio e da persistência. O projeto utiliza serviços e repositórios para organizar as responsabilidades, com validação e autorização no servidor.</p><p>O resultado é uma base com manutenção e testes mais previsíveis, além de suporte a demonstração local e integração com Supabase.</p></div>
+      <div class="architecture" aria-label="Diagrama conceitual simplificado das camadas de arquitetura do projeto">
+        <div class="layer"><div><strong>Experiência e interface</strong><small>Next.js · React · Tailwind CSS</small></div><span class="number" aria-hidden="true">01</span></div>
+        <div class="connect" aria-hidden="true"></div>
+        <div class="layer"><div><strong>Validação e fluxos</strong><small>TypeScript · Zod · controle de acesso</small></div><span class="number" aria-hidden="true">02</span></div>
+        <div class="connect" aria-hidden="true"></div>
+        <div class="layer"><div><strong>Serviços e regras de negócio</strong><small>Organização de práticas · lógica de domínio</small></div><span class="number" aria-hidden="true">03</span></div>
+        <div class="connect" aria-hidden="true"></div>
+        <div class="layer"><div><strong>Persistência e infraestrutura</strong><small>PostgreSQL · Supabase · Docker</small></div><span class="number" aria-hidden="true">04</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="qualidade">
+    <div class="container">
+      <div class="section-intro"><span class="eyebrow">04 / Qualidade e responsabilidade</span><h2>Confiabilidade é parte do <span class="accent">produto.</span></h2><p>Além de implementar funcionalidades, o desenvolvimento contempla verificações automatizadas e medidas de proteção para dados privados.</p></div>
+      <div class="quality-grid">
+        <article><h3>Qualidade de software</h3><p>O repositório original mantém testes e documentação de engenharia que apoiam a evolução do produto.</p><ul class="checks"><li>Testes unitários com Vitest</li><li>Fluxos end-to-end com Playwright</li><li>Análise estática e verificação TypeScript</li><li>Migrations versionadas para o banco</li></ul></article>
+        <article><h3>Privacidade e controle</h3><p>O produto foi desenhado com separação de responsabilidades e restrição de acesso a dados dos participantes.</p><ul class="checks"><li>Autenticação e permissões por perfil</li><li>Row Level Security (RLS) no PostgreSQL</li><li>Validação de entrada e autorização no servidor</li><li>Ambiente de piloto fechado e acesso por convite</li></ul></article>
+      </div>
+      <div class="status"><span class="dot" aria-hidden="true" style="margin-top:8px"></span><div><strong>Estado atual: beta funcional, em preparação para piloto fechado</strong><p>A documentação do projeto registra funcionalidades implementadas e testes automatizados. Isso não equivale à validação com usuários finais. O site de portfólio não usa informações reais dos participantes e não disponibiliza o ambiente privado.</p></div></div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="container">
+      <span class="eyebrow">Desenvolvimento por Alan de Vicente</span>
+      <h2>Da ideia à <span class="accent">implementação.</span></h2>
+      <p>Este estudo de caso apresenta competências em desenvolvimento Full Stack, arquitetura, experiência do usuário, persistência, testes e implantação de aplicações web.</p>
+      <div class="actions"><a class="button primary" href="https://github.com/alan0201" target="_blank" rel="noopener noreferrer">GitHub do desenvolvedor ↗</a><a class="button secondary" href="https://www.linkedin.com/in/alan-vicente-3b187b116/" target="_blank" rel="noopener noreferrer">Conectar no LinkedIn ↗</a></div>
+    </div>
+  </section>
+</main>
+<footer class="footer"><div class="container footer-grid"><p>© 2026 Alan de Vicente. Estudo de caso técnico do ESPIRAL App. Os conteúdos do Método ESPIRAL pertencem à profissional responsável. A apresentação é independente do aplicativo restrito e não contém dados pessoais, código-fonte privado ou detalhes operacionais de infraestrutura.</p><div class="footer-links"><a href="#inicio">Voltar ao topo ↑</a><a href="https://github.com/alan0201" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div></footer>
+</body>
+</html>
